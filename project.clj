@@ -2,12 +2,15 @@
   :description "A Tutorial for Om 1.0.0 (next)"
   :dependencies [[org.clojure/clojure "1.7.0" :scope "provided"]
                  [org.clojure/clojurescript "1.7.170" :scope "provided"]
-                 [devcards "0.2.1" :exclusions [org.omcljs/om]]
+                 [devcards "0.2.1-2" :exclusions [org.omcljs/om cljsjs/react-dom org.clojure/tools.reader cljsjs/react]]
                  [datascript "0.13.3"]
-                 [org.omcljs/om "1.0.0-alpha24"]
-                 [figwheel-sidecar "0.5.0-SNAPSHOT" :scope "test"]]
+                 [org.omcljs/om "1.0.0-alpha25"]
+                 [figwheel-sidecar "0.5.0-2" :exclusions [clj-time joda-time org.clojure/tools.reader] :scope "test"]
+                 [cljsjs/codemirror "5.8.0-0"]]
 
   :source-paths ["src/main" "src/cards" "src/tutorial"]
+
+  :plugins [[lein-cljsbuild "1.1.1"]]
 
   :clean-targets ^{:protect false} ["resources/public/js" "resources/public/cards" "resources/public/tutorial" "target"]
 
@@ -50,7 +53,30 @@
                                :output-dir           "resources/public/tutorial"
                                :parallel-build       true
                                :recompile-dependents true
-                               :verbose              false}}]}
+                               :verbose              false
+                               :foreign-libs         [{:provides ["cljsjs.codemirror.addons.closebrackets"]
+                                                       :requires ["cljsjs.codemirror"]
+                                                       :file     "resources/public/codemirror/closebrackets-min.js"}
+                                                      {:provides ["cljsjs.codemirror.addons.matchbrackets"]
+                                                       :requires ["cljsjs.codemirror"]
+                                                       :file     "resources/public/codemirror/matchbrackets-min.js"}]}}
+               {:id           "pages"
+                :source-paths ["src/main" "src/tutorial" "src/prod"]
+                :compiler     {
+                               :main                 core
+                               :devcards             true
+                               :asset-path           "pages"
+                               :output-to            "resources/public/pages/tutorial.js"
+                               :output-dir           "resources/public/pages"
+                               :parallel-build       false
+                               :verbose              true
+                               :optimizations        :advanced
+                               :foreign-libs         [{:provides ["cljsjs.codemirror.addons.closebrackets"]
+                                                       :requires ["cljsjs.codemirror"]
+                                                       :file     "resources/public/codemirror/closebrackets-min.js"}
+                                                      {:provides ["cljsjs.codemirror.addons.matchbrackets"]
+                                                       :requires ["cljsjs.codemirror"]
+                                                       :file     "resources/public/codemirror/matchbrackets-min.js"}]}}]}
 
   :profiles {
              :dev {:source-paths ["src/dev"]

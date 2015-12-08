@@ -34,7 +34,7 @@
   # UI
 
   Om uses <a href=\"https://facebook.github.io/react/index.html\" target=\"_blank\">React</a> underneath.
-  The primary mechanim for creating components is the `defui` macro:"
+  The primary mechanism for creating components is the `defui` macro:"
   (dc/mkdn-pprint-source Widget)
   "This macro generates a React Class as a plain javascript class, so it is completely compatible with the
   React ecosystem.
@@ -54,7 +54,7 @@
 
   In order to render components on the screen you need an element factory.
   You generate a factory with `om/factory`, which will then
-  acts like a new 'tag' for your DOM:"
+  act like a new 'tag' for your DOM:"
   (dc/mkdn-pprint-source widget)
   "Since they are plain React components you can render them in a <a href=\"https://github.com/bhauman/devcards#devcards\"
   target=\"_blank\">devcard</a>, which makes fine tuning them as pure UI dead simple:
@@ -71,7 +71,7 @@
 (defcard-doc
   "Such components are known as \"stateless components\" in Om because they do not expliticly ask for data. Later,
   when we learn about colocated queries, you'll see it is possible for a component to ask for the data it needs in
-  a declarative fasion.
+  a declarative fashion.
 
   For now, understand that you can give data to a stateless component via a simple edn map, and pull them out of
   `this` using `om/props`:"
@@ -136,6 +136,11 @@
   whether or not you use the rest of the features of Om. A root component calls the factory functions of subcomponents
   with an edn map as the first argument. That map is accessed using `om/props` on `this` within the subcomponent. Data
   is passed from component to component through `props`.
+
+  You might notice something new here: the `om/factory` function is supplied with an additional map `{:keyfn :name}`.
+  The factory function can be optionally supplied with two keywords: `:keyfn` and `:validator`. `:keyfn` produces the
+  <a href=\"https://facebook.github.io/react/docs/multiple-components.html\" target=\"_blank\">React key property</a>
+  from component props (here it's `:name`), while `:validator`takes a function that asserts the validity of the props received.
 
   ## Play With It
 
@@ -207,7 +212,8 @@
              (root-computed (om/computed prop-data sideband-data)))
            )
          {:number 42 :people [{:name "Sally"}] :b false}
-         {:inspect-data true})
+         {:inspect-data true
+          :history true})
 
 (defcard-doc
   "
@@ -216,7 +222,7 @@
 
   - Remember to use `#js` (shown as `clj->js` in many examples) to transform attribute maps for passing to DOM elements
   - Use *cljs* maps as input to your own Elements
-  - Extract properties with `om/props`. The is the same for stateful (with queries) or stateless components.
+  - Extract properties with `om/props`. This is the same for stateful (with queries) or stateless components.
   - Add parent-generated things (like callbacks) using `om/computed`.
 
   TODO: Add links to various docs

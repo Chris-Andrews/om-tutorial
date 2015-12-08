@@ -21,6 +21,8 @@
 
   There are others, but this is sufficient for a starting point.
 
+  Note that you can navigate to the table of contents any time using the `devcards` link at the top of the page.
+
   ## About This Tutorial
 
   This tutorial is written in Bruce Hauman's excellent Devcards. As such, these documents are live code!
@@ -41,7 +43,7 @@
 
 (defcard-doc
   "
-  Open up the A_Introduction.cljs, search for `simple-card`, edit the numbers, save, and watch this page refresh. You
+  Open up the A_Introduction.cljs, search for `sample-card`, edit the numbers, save, and watch this page refresh. You
   are encouraged to play with the source code and examples in the tutorial to verify your understanding as you read.
   Devcards support state as well, and will track it in an atom for you. Thus, you can generate UI that actually responds
   to user interaction:
@@ -63,6 +65,17 @@
   code reloading and devcards is therefore able to hold onto the state of the component. Thus, if you make dramatic
   changes to something and the saved state no longer makes sense then you will need to reload the page via the browser
   to clear that state.
+
+  # IMPORTANT IF YOU GET STUCK:
+
+  First, if there is no obvious error in the browser try reloading the page.
+
+  If you make a typo or language error Figwheel will usually describe it pretty well in the browser.
+  However, it is possible to get the whole thing stuck. Typing `(reset-autobuild)` in the REPL will clean the sources and
+  rebuild (and you'll see compile errors there). Correct the errors and everything should start
+  working again. DO NOT kill the REPL and restart, as that will cause you a lot of waiting as
+  you get compile errors, edit, and restart. (If you do kill the REPL,
+  you might even consider using git to undo your changes so that it will restart cleanly).
 
   ## Notes on documentation:
 

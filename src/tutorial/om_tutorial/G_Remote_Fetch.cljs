@@ -17,17 +17,30 @@
   "
   # Remote Fetch
 
-  TODO
+  TODO: The notes below are a mismash of thoghts...they are more notes to myself as placeholders for what to develop here...
 
   ### Remote Fetch
 
   For each remote that you list in the reconciler (default is just `:remote`), the parser will run with `:target` set
-  in the env to that remote. This lets you gather up different sets of queries to send to each remote.
+  in the env to that remote.
 
-  The reader factory I've created lets you supply a map from remote name to reader function, so that you can
-  separate your logic out for each of these query parses.
+  In this mode the parser is passing your read functions bits of query, and you are returning bits of query
+  (possibly modified). The point is that the remote parse returns the query you want to run on that remote
+  (or nothing if you don't have anything to say).
 
-  In remote parsing mode, the parser expects you to return either `true` or a (possibly modified) AST node (which
+  So, in \"local read mode (target = nil)\" your read functions return *data* for each part of a *result*.
+
+  In remote read mode (target != nil) your read functions return *query fragments* to *retain* as
+   parts of the query to send to the server.
+
+  Since the parser is run once for each remote you can gather up *different* queries to send to *each* remote. All
+  of them based on the current UI query.
+
+  The reader factory function for parsing I've created lets you supply a map from remote name to reader function,
+  so that you can separate your logic out for each of these query parses.
+
+  In remote parsing mode, the parser expects your read functions to return either `{:remote-name true }` or
+  a (possibly modified) `{:remote-name AST-node}` (which
   comes in as `:ast` in `env`). Doing recursive parsing on this is a bit of a pain, but is also typically necessary
   so that you can both maintain the structure of the query (which *must* be rooted from your Root component)
   and prune out the bits you don't want.
@@ -107,7 +120,39 @@
 
   The present example has a server simulation (using a 1 second setTimeout). Hitting \"refresh\" will clear the `:people`,
   which will cause the remote logic to trigger. One second later you should see the simulated data I've placed on this
-  \"in-browser server\".
+  \"in-browser server\". See `client-remoting` and `simulated-server` in the main project.
 
-  There is a lot more to do here, but tempids are not quite done yet, so I'll add more in as that becomes available.
+  The current code only works if you to use lein checkouts and Om alpha 25-snapshot. Once alpha 25+ is out, this
+  should be easier.
   ")
+
+(defcard-doc "
+  ## Handling Results
+
+  The server will respond to queries as if you'd run them through your local parser...e.g. the remoting
+  has the exact form as a local parse: You send a query, it returns a response. The fact that there
+  is some network plumbing in the middle just means you have a little more error handling to do.
+
+  However, that isn't the whole story: calling the provided callback to put the returned data into the
+  database is often not quite enough.
+
+  The default mechanims of Om understand the basics of the app database, but there are a number
+  of application-specific details that you must understand, and possibly handle yourself.
+
+  When you create your application's reconciler, you may supply overrides to the following:
+
+  - `:merge-tree` A function used to take a response from the server and merge it into your app database.
+  Defaults to a very naive shallow merge.
+  - `:migrate` A function to rewrite tempids that have been reassigned by the server. As of alpha24 this function
+  will remove any database data that is not currently in the UI query (e.g. isn't on the screen). This may
+  cause undesired chattiness over the network, and possibly other bad behavior if you're doing anything
+  a bit non-standard with the app database.
+  - `:id-key` If you do use the built-in tempid migration, this config option specifies which key in you app state
+  maps is used to hold the DB ID (where tempids will appear).
+
+  If you look in `om-tutorial.core` you'll see an alternate tempid migration function that doesn't need id-key
+  and doesn't throw out potential cached app state.
+
+  ")
+
+
